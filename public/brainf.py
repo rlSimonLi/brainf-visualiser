@@ -1,5 +1,6 @@
 from collections import deque
 
+
 class Node:
     def __init__(self, value: int = 0, bits=8):
         self._value = value
@@ -18,6 +19,9 @@ class Node:
     def set_by_chr(self, char):
         raw = ord(char)
         self.set_by_raw(raw)
+
+    def __str__(self):
+        return str(self._value)
 
 
 class Tape:
@@ -42,20 +46,15 @@ class Brainf:
         return self.ins[self.ins_idx]
 
     def execute_ins(self):
-        output = None
-
-        if self.current_ins == ">":
-            self.move_pointer_right()
-        elif self.current_ins == "<":
-            self.move_pointer_left()
-        elif self.current_ins == "+":
-            self.inc_node()
-        elif self.current_ins == "-":
-            self.dec_node()
-        elif self.current_ins == ".":
-            output = self.stdout()
-        elif self.current_ins == ",":
-            self.stdin()
+        instruction_set = {
+            ">": self.move_pointer_right,
+            "<": self.move_pointer_left,
+            "+": self.inc_node,
+            "-": self.dec_node,
+            ".": self.stdout,
+            ",": self.stdin,
+        }
+        output = instruction_set[self.current_ins]()
         self.ins_idx += 1
         return output
 
@@ -79,14 +78,18 @@ class Brainf:
 
     def stdin(self):
         p = self.tape.current_node
-        char = "3"
+        char = "@"  # TODO: replace with javascript prompt
         p.set_by_chr(char)
+
+    def __str__(self):
+        return str([str(n) for n in self.tape.tape])
 
 
 def main():
-    a = Brainf(",++.")
+    a = Brainf(",++>++<.")
     for ins in a.ins:
         out = a.execute_ins()
+        print(a)
         if out:
             return out
 
